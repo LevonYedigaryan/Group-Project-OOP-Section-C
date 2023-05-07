@@ -33,6 +33,14 @@ public class PackedRotor extends Rotor{
 		this(pattern.toString());
 	}
 
+	int getOneCharacterSpace(){
+		return oneCharacterSpace;
+	}
+
+	void setOneCharacterSpace(int space){
+		oneCharacterSpace=space;
+	}
+
 	public void rotate(){
 		resetAfterRotation();
 		for(int i=0;i<getStep();i++){

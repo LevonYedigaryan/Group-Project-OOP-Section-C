@@ -1,7 +1,6 @@
 public class PackedReflector extends PackedRotor{
 	public PackedReflector(String format) throws IncorrectFormatException, RotorBoundsException{
 		super(format);
-		String sorted=getPattern().getSorted();
 		String cypher=getPattern().getCypher();
 		for(int i=0;i<=getMaximalIndex();i++){
 			if(i!=getPattern().sortedIndexOf(cypher.charAt(getPattern().sortedIndexOf(cypher.charAt(i))))){
