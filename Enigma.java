@@ -10,7 +10,7 @@ public class Enigma{
 				rotors[i]=new PackedRotor(formatRotor[i]);
 			}
 			reflector=new PackedReflector(formatReflector);
-			for(int i=0;i<formatRotor.length;i++){
+			for(int i=0;i<formatRotor.length-1;i++){
 				if(!rotors[i].equals(rotors[i+1])){
 					System.out.println("kakadu");
 				}

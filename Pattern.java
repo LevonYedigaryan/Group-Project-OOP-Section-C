@@ -53,9 +53,6 @@ public class Pattern{
 		catch(ArrayIndexOutOfBoundsException e){
 			throw new IncorrectFormatException("Invalid format: Incorrect number of fields in pattern (found "+tokens.length+").");
 		}
-		if(cypher.indexOf(startingPosition)<0){
-			throw new IncorrectFormatException("Invalid format: Starting position and cypher incompatibility");
-		}
 		String[] sortedArray=cypher.split("");
 		Arrays.sort(sortedArray);
 		for(int i=0;i<sortedArray.length;i++){
