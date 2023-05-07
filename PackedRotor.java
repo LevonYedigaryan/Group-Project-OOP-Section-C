@@ -34,6 +34,7 @@ public class PackedRotor extends Rotor{
 	}
 
 	public void rotate(){
+		resetAfterRotation();
 		for(int i=0;i<getStep();i++){
 			long firstDigit=rotor;
 			firstDigit>>=maximalIndex*oneCharacterSpace;
@@ -48,16 +49,22 @@ public class PackedRotor extends Rotor{
 		
 	}
 
-	public int getCharacter(int index) throws RotorBoundsException{
-		if(getAfterRotation()==getFrequency()){
-			rotate();
-			resetAfterRotation();
-		}
+	public int getCharacter(int index){
 		if(index>=0 && index<getPattern().getCypher().length()){
-			increaseAfterRotation();
 			return (int)((rotor>>(index*oneCharacterSpace))&((1<<oneCharacterSpace)-1));
 		}
-		throw new RotorBoundsException("Incorrect bounds: requested index out of Rotor bounds("+index+" is not supported in rotor).");
+		return -1;
+	}
+
+	public boolean equals(Object object){
+		if(object==null){
+			return false;
+		}
+		else if(!(object instanceof PackedRotor)){
+			return false;
+		}
+		PackedRotor comparable=(PackedRotor) object;
+		return this.getPattern().getSorted().equals(comparable.getPattern().getSorted());
 	}
 
 	void setCharacter(int index, int value) throws RotorBoundsException{

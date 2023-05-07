@@ -18,7 +18,7 @@ public abstract class Rotor{
 
 	public abstract void rotate();
 
-	public abstract int getCharacter(int index) throws RotorBoundsException;
+	public abstract int getCharacter(int index);
 
 	abstract void setCharacter(int index, int value) throws RotorBoundsException;
 

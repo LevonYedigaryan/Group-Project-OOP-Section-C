@@ -84,6 +84,9 @@ public class Pattern{
 				end=mid-1;
 			}
 			mid=(start+end)/2;
+			if((mid==0 || mid==sorted.length()-1) && sorted.charAt(mid)!=character){
+				return -1;
+			}
 		}
 		return mid;
 	}
