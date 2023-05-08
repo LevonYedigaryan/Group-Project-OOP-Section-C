@@ -20,6 +20,8 @@ public abstract class Rotor{
 
 	public abstract int getCharacter(int index);
 
+	public abstract int getInverseCharacter(int index);
+
 	abstract void setCharacter(int index, int value) throws RotorBoundsException;
 
 	public int getStep(){

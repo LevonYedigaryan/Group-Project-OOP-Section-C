@@ -81,7 +81,7 @@ public class Pattern{
 				end=mid-1;
 			}
 			mid=(start+end)/2;
-			if((mid==0 || mid==sorted.length()-1) && sorted.charAt(mid)!=character){
+			if(mid==end && (sorted.charAt(mid)!=character)){
 				return -1;
 			}
 		}
@@ -120,6 +120,9 @@ public class Pattern{
 		rotor.setPattern(this);
 		rotor.setStep(step);
 		rotor.setFrequency(frequency);
+	}
+
+	public void setSettings(Rotor rotor) throws RotorBoundsException{
 		for(int i=0;i<sorted.length();i++){
 			rotor.setCharacter(i,sortedIndexOf(cypher.charAt(i)));
 		}
