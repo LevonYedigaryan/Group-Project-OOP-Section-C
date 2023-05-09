@@ -20,18 +20,23 @@ public class Enigma{
 		pattern=reflector.getPattern();
 	}
 
+	int goThroughRotors(int index){
+		for(int i=0;i<rotors.length;i++){
+			index=rotors[i].getCharacter(index);
+		}
+		index=reflector.getCharacter(index);
+		for(int i=rotors.length-1;i>=0;i--){
+			index=rotors[i].getInverseCharacter(index);
+		}
+		return index;
+	}
+
 	public String encode(String message){
 		String code="";
 		for(int i=0;i<message.length();i++){
 			int index=pattern.sortedIndexOf(message.charAt(i));
 			if(index!=-1){
-				for(int j=0;j<rotors.length;j++){
-					index=rotors[j].getCharacter(index);
-				}
-				index=reflector.getCharacter(index);
-				for(int j=rotors.length-1;j>=0;j--){
-					index=rotors[j].getInverseCharacter(index);
-				}
+				index=goThroughRotors(index);
 				code+=pattern.getValueOf(index);
 			}
 			else{
@@ -49,5 +54,17 @@ public class Enigma{
 			}
 		}
 		return code;
+	}
+
+	public Pattern getPattern(){
+		return pattern;
+	}
+
+	Rotor[] getRotors(){
+		return rotors;
+	}
+
+	PackedReflector getReflector(){
+		return reflector;
 	}
 }
