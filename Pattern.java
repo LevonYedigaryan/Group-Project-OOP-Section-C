@@ -11,7 +11,7 @@ public class Pattern{
 	public Pattern(String format) throws IncorrectFormatException{
 		String[] tokens=format.split(":");
 		int cypherIndex=2;
-		if(tokens.length>3){
+		if(tokens.length>5){
 			throw new IncorrectFormatException("Incorrect format: Incorrect number of fields in pattern (found "+tokens.length+").");
 		}
 		try{

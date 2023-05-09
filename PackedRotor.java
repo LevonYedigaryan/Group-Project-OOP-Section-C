@@ -1,9 +1,14 @@
+import java.util.ArrayList;
+
 public class PackedRotor extends Rotor{
-	private long rotor;
-	private long toAddRotation=1;
+	private ArrayList<Long> rotor=new ArrayList<>(6);
 	private int oneCharacterSpace=0;
 	private int maximalIndex;
-	private final int MEMORYLENGTH=64;
+	private int oneSlotCharacterNumber;
+	private int freeSpace;
+	private int lastRowFreeSpace;
+	private long fullCharacter;
+	private final int ONEMEMORYSLOT=64;
 	
 
 	public PackedRotor(String format) throws IncorrectFormatException, RotorBoundsException{
@@ -13,17 +18,14 @@ public class PackedRotor extends Rotor{
 		while((1L<<(oneCharacterSpace))<maximalIndex){
 			oneCharacterSpace++;
 		}
-		if(MEMORYLENGTH/oneCharacterSpace<oneCharacterSpace){
-			throw new IncorrectFormatException("Incorrct format: No enough memory to store the cypher.");
+		oneSlotCharacterNumber=ONEMEMORYSLOT/oneCharacterSpace;
+		freeSpace=ONEMEMORYSLOT%oneCharacterSpace;
+		fullCharacter=(1L<<oneCharacterSpace)-1;
+		while(rotor.size()*oneSlotCharacterNumber<maximalIndex+1){
+			rotor.add(0L);
 		}
-		for(int i=0;i<maximalIndex;i++){
-			toAddRotation=(toAddRotation<<oneCharacterSpace)+1;
-		}
+		lastRowFreeSpace=ONEMEMORYSLOT-(maximalIndex%oneSlotCharacterNumber+1)*oneCharacterSpace;
 		getPattern().setSettings(this);
-	}
-
-	int getMaximalIndex(){
-		return maximalIndex;
 	}
 
 	public PackedRotor(PackedRotor rotor) throws IncorrectFormatException, RotorBoundsException{
@@ -32,6 +34,10 @@ public class PackedRotor extends Rotor{
 
 	public PackedRotor(Pattern pattern) throws IncorrectFormatException, RotorBoundsException{
 		this(pattern.toString());
+	}
+	
+	int getMaximalIndex(){
+		return maximalIndex;
 	}
 
 	int getOneCharacterSpace(){
@@ -45,35 +51,46 @@ public class PackedRotor extends Rotor{
 	public void rotate(){
 		resetAfterRotation();
 		for(int i=0;i<getStep();i++){
-			long firstDigit=rotor;
-			long addAtTheEnd=toAddRotation;
-			firstDigit>>=maximalIndex*oneCharacterSpace;
-			rotor=(rotor<<oneCharacterSpace)+firstDigit;
-			for(int j=0;j<=maximalIndex*oneCharacterSpace;j+=oneCharacterSpace){
-				if(((rotor>>j)&((1L<<oneCharacterSpace)-1))==maximalIndex){
-					rotor^=((long)maximalIndex)<<j;
-					addAtTheEnd-=1L<<j;
-					break;
+			long lastDigit;
+			long passToNext=(rotor.get(rotor.size()-1)<<(ONEMEMORYSLOT-(lastRowFreeSpace+oneCharacterSpace)))&((fullCharacter)<<(ONEMEMORYSLOT-oneCharacterSpace));
+			for(int j=0;j<rotor.size();j++){
+				lastDigit=(rotor.get(j)>>>freeSpace)&(fullCharacter);
+				rotor.set(j,(rotor.get(j)>>>oneCharacterSpace)+passToNext);
+				passToNext=lastDigit<<(oneCharacterSpace*(oneSlotCharacterNumber-1)+freeSpace);
+				int bound=freeSpace;
+				if(j==rotor.size()-1){
+					bound=lastRowFreeSpace;
+				}
+				for(int k=ONEMEMORYSLOT-oneCharacterSpace;k>=bound;k-=oneCharacterSpace){
+					if(((rotor.get(j)>>>k)&(fullCharacter))==maximalIndex){
+						rotor.set(j,rotor.get(j)^((long)maximalIndex)<<k);
+					}
+					else{
+						rotor.set(j,rotor.get(j)+(1L<<k));
+					}
 				}
 			}
-			rotor+=addAtTheEnd;
-			rotor&=(1<<(maximalIndex+1)*oneCharacterSpace)-1;
 		}
-		
 	}
 
 	public int getCharacter(int index){
-		if(index>=0 && index<getPattern().getCypher().length()){
-			return (int)((rotor>>(index*oneCharacterSpace))&((1<<oneCharacterSpace)-1));
+		if(index>=0 && index<=maximalIndex){
+			long row=rotor.get(index/oneSlotCharacterNumber);
+			row>>>=ONEMEMORYSLOT-(index%oneSlotCharacterNumber+1)*oneCharacterSpace;
+			return (int)(row&(fullCharacter));
 		}
 		return -1;
 	}
 
 	public int getInverseCharacter(int index){
-		if(index>=0 && index<getPattern().getCypher().length()){
-			for(int i=0;i<=maximalIndex;i++){
-				if(((rotor>>(i*oneCharacterSpace))&((1L<<oneCharacterSpace)-1))==index){
-					return i;
+		for(int i=0;i<rotor.size();i++){
+			int bound=freeSpace;
+			if(i==rotor.size()-1){
+				bound=lastRowFreeSpace;
+			}
+			for(int j=ONEMEMORYSLOT-oneCharacterSpace;j>=bound;j-=oneCharacterSpace){
+				if((fullCharacter&(rotor.get(i)>>>j))==index){
+					return i*oneSlotCharacterNumber+(ONEMEMORYSLOT-j-1)/oneCharacterSpace;
 				}
 			}
 		}
@@ -98,8 +115,11 @@ public class PackedRotor extends Rotor{
 		if(value<0 && value>maximalIndex){
 			throw new RotorBoundsException("Incorrect bounds: requested index out of Rotor bounds("+value+" is not supported in rotor).");
 		}
-		long remainder=rotor&((1L<<(index*oneCharacterSpace))-1);
-		rotor-=rotor&((1L<<((index+1)*oneCharacterSpace))-1);
-		rotor+=remainder+((long)value<<(index*oneCharacterSpace));
+		int row=index/oneSlotCharacterNumber;
+		long remainder=rotor.get(row)&((1L<<(ONEMEMORYSLOT-(index%oneSlotCharacterNumber+1)*oneCharacterSpace))-1);
+		long newValue=rotor.get(row)-(rotor.get(row)&((1L<<(ONEMEMORYSLOT-(index%oneSlotCharacterNumber)*oneCharacterSpace))-1));
+		rotor.set(row,newValue+remainder);
+		newValue=rotor.get(row)+(((long)value)<<(ONEMEMORYSLOT-(index%oneSlotCharacterNumber+1)*oneCharacterSpace));
+		rotor.set(row, newValue);
 	}
 }
