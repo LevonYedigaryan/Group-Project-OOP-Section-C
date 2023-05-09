@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class PackedRotor extends Rotor{
-	private ArrayList<Long> rotor=new ArrayList<>(6);
+	private ArrayList<Long> rotor=new ArrayList<>(1);
 	private int oneCharacterSpace=0;
 	private int maximalIndex;
 	private int oneSlotCharacterNumber;
