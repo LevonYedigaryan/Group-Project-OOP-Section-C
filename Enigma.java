@@ -20,7 +20,7 @@ public class Enigma{
 		pattern=reflector.getPattern();
 	}
 
-	int goThroughRotors(int index){
+	int goThroughRotors(int index, Rotor[] rotors){
 		for(int i=0;i<rotors.length;i++){
 			index=rotors[i].getCharacter(index);
 		}
@@ -36,7 +36,7 @@ public class Enigma{
 		for(int i=0;i<message.length();i++){
 			int index=pattern.sortedIndexOf(message.charAt(i));
 			if(index!=-1){
-				index=goThroughRotors(index);
+				index=goThroughRotors(index, rotors);
 				code+=pattern.getValueOf(index);
 			}
 			else{

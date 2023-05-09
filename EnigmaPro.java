@@ -59,6 +59,10 @@ public class EnigmaPro extends Enigma{
         maximalIndex=this.getPattern().getCypher().length()-1;
     }
 
+    ChangeBoard getChanger(){
+        return changer;
+    }
+
     public void changeCharacters(char a, char b) throws RequestException{
         if(0<=getPattern().sortedIndexOf(a) && getPattern().sortedIndexOf(a)<=maximalIndex && 0<=getPattern().sortedIndexOf(b) && getPattern().sortedIndexOf(b)<=maximalIndex){
             changer.changeCharacters(a, b);
@@ -70,32 +74,28 @@ public class EnigmaPro extends Enigma{
 
     public String encode(String message){
 		String code="";
-        boolean rotate;
 		for(int i=0;i<message.length();i++){
-            rotate=false;
 			int index=getPattern().sortedIndexOf(message.charAt(i));
 			if(index!=-1){
-				index=goThroughRotors(index);
-                if(rotate){
+				index=goThroughRotors(index, getRotors());
+                if(index!=changer.getCharacter(index)){
                     index=changer.getCharacter(index);
-                    index=goThroughRotors(index);
+                    index=goThroughRotors(index, getRotors());
                 }
                 code+=getPattern().getValueOf(index);
+                for(int j=0;j<getRotors().length;j++){
+                    getRotors()[j].increaseAfterRotation();
+                    if(getRotors()[j].getAfterRotation()==getRotors()[j].getFrequency()){
+                        getRotors()[j].rotate();
+                    }
+                }
+                getReflector().increaseAfterRotation();
+                if(getReflector().getAfterRotation()==getReflector().getFrequency()){
+                    getReflector().rotate();
+                }
 			}
 			else{
 				code+=message.charAt(i);
-			}
-			for(int j=0;j<getRotors().length;j++){
-				getRotors()[j].increaseAfterRotation();
-				if(getRotors()[j].getAfterRotation()==getRotors()[j].getFrequency()){
-					getRotors()[j].rotate();
-                    rotate=true;
-				}
-			}
-			getReflector().increaseAfterRotation();
-			if(getReflector().getAfterRotation()==getReflector().getFrequency()){
-				getReflector().rotate();
-                rotate=true;
 			}
 		}
 		return code;
