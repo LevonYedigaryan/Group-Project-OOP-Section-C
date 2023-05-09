@@ -53,6 +53,9 @@ public class Pattern{
 		catch(ArrayIndexOutOfBoundsException e){
 			throw new IncorrectFormatException("Invalid format: Incorrect number of fields in pattern (found "+tokens.length+").");
 		}
+		if(startingPosition>=cypher.length()){
+			throw new IncorrectFormatException("Invalid format: Starting position must be smaller than the number of characters cyphered.");
+		}
 		String[] sortedArray=cypher.split("");
 		Arrays.sort(sortedArray);
 		for(int i=0;i<sortedArray.length;i++){
@@ -64,7 +67,7 @@ public class Pattern{
 			}
 			for(int j=i+1;j<cypher.length();j++){
 				if(cypher.charAt(i)==cypher.charAt(j)){
-					throw new IncorrectFormatException("Invalid format: "+cypher.charAt(i)+" can only orruc once.");
+					throw new IncorrectFormatException("Invalid format: "+cypher.charAt(i)+" can only occur once.");
 				}
 			}
 		}
