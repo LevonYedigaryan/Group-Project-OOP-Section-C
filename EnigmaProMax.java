@@ -55,6 +55,9 @@ public class EnigmaProMax extends EnigmaPro{
 			if(index!=-1){
                 Rotor[] workingRotors=new Rotor[numberOfWorkingRotors];
                 for(int j=0;j<numberOfWorkingRotors;j++){
+                    if(count>rotorIndexes.length-1){
+                        throw new RequestException("Invalide request: The key inputted is wrong or incomplete.");
+                    }
                     if(rotorIndexes[count].charAt(j)<'0' || rotorIndexes[count].charAt(j)>'9'){
                         throw new RequestException("Invalide request: The input is not a key.");
                     }
