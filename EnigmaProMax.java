@@ -1,8 +1,11 @@
 public class EnigmaProMax extends EnigmaPro{
     private int numberOfWorkingRotors;
 
-    public EnigmaProMax(String[] formatRotor, String formatReflector, int numberOfWorkingRotors) throws IncorrectFormatException, RotorBoundsException, RotorIncompatibilityException, RequestException{
-        super(formatRotor, formatReflector);
+    public EnigmaProMax(String[] formatRotor, String formatReflector, String configuration, int numberOfWorkingRotors) throws IncorrectFormatException, RotorBoundsException, RotorIncompatibilityException, RequestException{
+        super(formatRotor, formatReflector, configuration);
+        if(numberOfWorkingRotors<0){
+            throw new RequestException("Invalid request: Number of working rotors can not be negative.");
+        }
         if(getRotors().length<numberOfWorkingRotors){
             throw new RequestException("Invalid request: Number of working rotors can not be greater than the number of rotors.");
         }
@@ -22,11 +25,9 @@ public class EnigmaProMax extends EnigmaPro{
                     key+=randomIndex;
                 }
                 key+=":";
+                index=getChanger().getCharacter(index);
 				index=goThroughRotors(index, workingRotors);
-                if(index!=getChanger().getCharacter(index)){
-                    index=getChanger().getCharacter(index);
-                    index=goThroughRotors(index, getRotors());
-                }
+                index=getChanger().getCharacter(index);
                 code+=getPattern().getValueOf(index);
                 for(int j=0;j<workingRotors.length;j++){
                     workingRotors[j].increaseAfterRotation();
@@ -63,11 +64,9 @@ public class EnigmaProMax extends EnigmaPro{
                     }
                     workingRotors[j]=getRotors()[rotorIndexes[count].charAt(j)-'0'];
                 }
+                index=getChanger().getCharacter(index);
 				index=goThroughRotors(index, workingRotors);
-                if(index!=getChanger().getCharacter(index)){
-                    index=getChanger().getCharacter(index);
-                    index=goThroughRotors(index, getRotors());
-                }
+                index=getChanger().getCharacter(index);
                 message+=getPattern().getValueOf(index);
                 count++;
                 for(int j=0;j<workingRotors.length;j++){

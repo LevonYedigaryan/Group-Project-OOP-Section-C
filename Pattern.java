@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class Pattern{
+public class Pattern implements Comparable<Pattern>{
 	private String name;
 	private int startingPosition;
 	private int step=1;
@@ -136,5 +136,9 @@ public class Pattern{
 
 	public String toString(){
 		return name+":"+startingPosition+":"+step+":"+frequency+":"+cypher;
+	}
+
+	public int compareTo(Pattern pattern){
+		return this.toString().compareTo(pattern.toString());
 	}
 }

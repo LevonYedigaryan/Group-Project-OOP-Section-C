@@ -3,35 +3,34 @@ public class EnigmaPro extends Enigma{
         private String changer="";
         private Pattern pattern;
 
-        public ChangeBoard(String format) throws IncorrectFormatException{
+        public ChangeBoard(String format, String configuration) throws IncorrectFormatException, RequestException{
             this.pattern=new Pattern(format);
+            if(configuration.length()%2!=0){
+                throw new RequestException("Wrong request: configuration must be even.");
+            }
+            for(int i=0;i<configuration.length();i++){
+                for(int j=i+1;j<configuration.length();j++){
+                    if(configuration.charAt(i)==configuration.charAt(j)){
+                        throw new RequestException("Wrong request: There must be no repetative characters in a configuration.");
+                    }
+                }
+                if(pattern.sortedIndexOf(configuration.charAt(i))<0){
+                    throw new RequestException("Wrong request: COnfiguration given does not correspond to the Pattern.");
+                }
+            }
+            changer=configuration;
         }
 
-        public ChangeBoard(ChangeBoard changeboard) throws IncorrectFormatException{
-            this(changeboard.getPattern());
+        public ChangeBoard(ChangeBoard changeboard, String configuration) throws IncorrectFormatException, RequestException{
+            this(changeboard.getPattern(), configuration);
         }
 
-        public ChangeBoard(Pattern pattern) throws IncorrectFormatException{
-            this.pattern=pattern;
+        public ChangeBoard(Pattern pattern, String configuration) throws IncorrectFormatException, RequestException{
+            this(pattern.toString(), configuration);
         }
 
         public Pattern getPattern(){
             return pattern;
-        }
-    
-        public void changeCharacters(char a, char b){
-            for(int i=0;i<changer.length();i++){
-                if(changer.charAt(i)==a){
-                    if(i%2==0){
-                        changer=changer.substring(0, i)+changer.substring(i+2)+a+b;
-                        break;
-                    }
-                    else{
-                        changer=changer.substring(0, i-1)+changer.substring(i+1)+a+b;
-                        break;
-                    }
-                }
-            }
         }
 
         public int getCharacter(int index){
@@ -50,26 +49,15 @@ public class EnigmaPro extends Enigma{
         }
     }
 
-    private int maximalIndex;
     private ChangeBoard changer;
 
-    public EnigmaPro(String[] formatRotor, String formatReflector) throws IncorrectFormatException, RotorBoundsException, RotorIncompatibilityException{
+    public EnigmaPro(String[] formatRotor, String formatReflector, String configuration) throws IncorrectFormatException, RotorBoundsException, RotorIncompatibilityException, RequestException{
         super(formatRotor, formatReflector);
-        changer=new ChangeBoard(getPattern());
-        maximalIndex=this.getPattern().getCypher().length()-1;
+        changer=new ChangeBoard(getPattern(), configuration);
     }
 
     ChangeBoard getChanger(){
         return changer;
-    }
-
-    public void changeCharacters(char a, char b) throws RequestException{
-        if(0<=getPattern().sortedIndexOf(a) && getPattern().sortedIndexOf(a)<=maximalIndex && 0<=getPattern().sortedIndexOf(b) && getPattern().sortedIndexOf(b)<=maximalIndex){
-            changer.changeCharacters(a, b);
-        }
-        else{
-            throw new RequestException();
-        }
     }
 
     public String encode(String message){
@@ -77,11 +65,9 @@ public class EnigmaPro extends Enigma{
 		for(int i=0;i<message.length();i++){
 			int index=getPattern().sortedIndexOf(message.charAt(i));
 			if(index!=-1){
+                index=changer.getCharacter(index);
 				index=goThroughRotors(index, getRotors());
-                if(index!=changer.getCharacter(index)){
-                    index=changer.getCharacter(index);
-                    index=goThroughRotors(index, getRotors());
-                }
+                index=changer.getCharacter(index);
                 code+=getPattern().getValueOf(index);
                 for(int j=0;j<getRotors().length;j++){
                     getRotors()[j].increaseAfterRotation();
