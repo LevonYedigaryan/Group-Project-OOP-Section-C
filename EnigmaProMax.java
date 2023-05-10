@@ -50,6 +50,7 @@ public class EnigmaProMax extends EnigmaPro{
     public String decode(String code, String key) throws RequestException{
 		String message="";
         String[] rotorIndexes=key.split(":");
+        numberOfWorkingRotors=rotorIndexes[0].length();
         int count=0;
 		for(int i=0;i<code.length();i++){
 			int index=getPattern().sortedIndexOf(code.charAt(i));
