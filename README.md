@@ -2,7 +2,11 @@
 
 As GitHub did not allow us to add folders, while our program relies on two such folders, we decided to add everything in one zip file.
 
-Please compile and run the GUI.java file inside the OOP Group Project\Enigma Machine to use our program.
+Please extract the file LevonYedigaryan_DianaStepanyan_OOP_GroupProject.zip then go to the following direction,
+
+OOP Group Project\Enigma Machine
+
+To use our program please compile and run the GUI.java file inside.
 
 
 
